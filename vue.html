@@ -9,7 +9,10 @@
 </head>
 
 <body>
-    <div id="demo"></div>
+    <div id="demo">
+        {{name}}
+        <p>{{age}}</p>
+    </div>
     <script>
         class Vue {
             constructor(props) {
@@ -19,6 +22,7 @@
                 Object.keys(data).forEach((key) => {
                     this.proxyData(key)
                 })
+                this.compile(el)
             }
             proxyData(key) {
                 let self = this
@@ -32,6 +36,25 @@
                         return self.$data[key]
                     }
                 })
+            }
+            compile(el) {
+                let nodes = el.childNodes
+                for (let node of nodes) {
+                    switch (node.nodeType) {
+                        case 1:
+                        case 3:
+                            this.compileText(node, "textContent")
+                    }
+                }
+            }
+            compileText(node, type) {
+                let txt = node.textContent
+                let reg = /\{\{((?:.|\r?\n)+?)\}\}/g;
+                if (reg.test(txt)) {
+                    node.textContent = txt.replace(reg, (meched, value) => {
+                        return this[value]
+                    })
+                }
             }
         }
         let vm = new Vue({
