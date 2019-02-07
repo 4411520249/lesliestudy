@@ -18,6 +18,8 @@
     <script>
         class Vue {
             constructor(props) {
+                this.beforeCreate = props.beforeCreate
+                this.beforeCreate()
                 let el = this.$el = document.querySelector(props.el)
                 let data = this.$data = props.data
                 let watch = this.$watch = new Observer
@@ -25,6 +27,8 @@
                     this.proxyData(key)
                 })
                 this.compile(el)
+                this.mounted = props.mounted
+                this.mounted()
             }
             proxyData(key) {
                 let self = this
@@ -104,7 +108,13 @@
                 name: "leslie",
                 age: 28,
                 qq: `<h1>html</h1>`
-            }
+            },
+            beforeCreate() {
+                console.log(this.name)
+            },
+            mounted() {
+                console.log(this.name)
+            },
         })
     </script>
 </body>
