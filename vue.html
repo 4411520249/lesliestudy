@@ -13,6 +13,7 @@
         {{name}}
         <p>{{age}}</p>
         <input v-model="age">
+        <div v-html="qq"></div>
     </div>
     <script>
         class Vue {
@@ -51,6 +52,9 @@
                                 node.addEventListener('input', () => {
                                     this[attrval] = node.value
                                 })
+                            } else if (node.hasAttribute('v-html')) {
+                                let attrval = node.getAttribute('v-html')
+                                node.innerHTML = this[attrval]
                             }
                         case 3:
                             this.compileText(node, "textContent")
@@ -98,7 +102,8 @@
             el: "#demo",
             data: {
                 name: "leslie",
-                age: 28
+                age: 28,
+                qq: `<h1>html</h1>`
             }
         })
     </script>
