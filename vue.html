@@ -12,6 +12,7 @@
     <div id="demo">
         {{name}}
         <p>{{age}}</p>
+        <input v-model="age">
     </div>
     <script>
         class Vue {
@@ -44,6 +45,13 @@
                 for (let node of nodes) {
                     switch (node.nodeType) {
                         case 1:
+                            if (node.hasAttribute('v-model')) {
+                                let attrval = node.getAttribute('v-model')
+                                node.value = this[attrval]
+                                node.addEventListener('input', () => {
+                                    this[attrval] = node.value
+                                })
+                            }
                         case 3:
                             this.compileText(node, "textContent")
                     }
