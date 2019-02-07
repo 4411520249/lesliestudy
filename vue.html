@@ -18,7 +18,7 @@
             constructor(props) {
                 let el = this.$el = document.querySelector(props.el)
                 let data = this.$data = props.data
-
+                let watch = this.$watch = new Observer
                 Object.keys(data).forEach((key) => {
                     this.proxyData(key)
                 })
@@ -30,6 +30,8 @@
                     set(newValue) {
                         self.$data[key] = newValue
                         console.log('改值', newValue)
+                            // 触发 发布者
+                        this.$watch.emit(key, null)
                     },
                     get() {
                         console.log('查值')
@@ -52,9 +54,36 @@
                 let reg = /\{\{((?:.|\r?\n)+?)\}\}/g;
                 if (reg.test(txt)) {
                     node.textContent = txt.replace(reg, (meched, value) => {
+                        // 监听 订阅者
+                        this.$watch.on(value, () => {
+                            node.textContent = this[value]
+                        })
                         return this[value]
                     })
                 }
+            }
+        }
+        //观察者模式
+        class Observer {
+            constructor() {
+                    this.list = {}
+                }
+                // 监听 订阅者
+            on(key, fn) {
+                    if (!this.list[key]) {
+                        this.list[key] = [];
+                    }
+                    this.list[key].push(fn);
+                }
+                // 触发 发布者
+            emit(key, params) {
+                let fns = this.list[key];
+                if (!fns || fns.length === 0) {
+                    return false;
+                }
+                fns.forEach(fn => {
+                    fn(params);
+                });
             }
         }
         let vm = new Vue({
